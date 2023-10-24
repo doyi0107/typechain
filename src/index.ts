@@ -21,6 +21,40 @@ class Block implements BlockShape {
 
       static calculateHash(prevHash:string, height:number, data:string){
         const toHash = `${prevHash}${height}${data}`;
-
+        return crypto.createHash("sha256").update(toHash).digest("hex");
       }
 }
+
+class Blockchain {
+    private blocks : Block[];
+    constructor(){
+      this.blocks = [];
+    }
+
+    private getPrevHash(){
+      if(this.blocks.length === 0) return "";
+      return this.blocks[this.blocks.length - 1].hash;
+    }
+
+    public addBlock(data:string){
+      const newblock = new Block(this.getPrevHash(), this.blocks.length + 1, data);
+      this.blocks.push(newblock)
+    }
+
+    public getBlocks(){
+      return [...this.blocks];
+      //this.blocks으로 하면 해킹당할 위험이 있다. 이렇게 바꿔주면 배열 안에 있는 데이터를 가진 새로운 배열을 리턴해줄 뿐이다. 
+    }
+}
+
+const blockchain = new Blockchain();
+
+blockchain.addBlock("first one");
+blockchain.addBlock("second one");
+blockchain.addBlock("third one");
+blockchain.addBlock("four one");
+
+console.log(blockchain.getBlocks());
+
+
+
